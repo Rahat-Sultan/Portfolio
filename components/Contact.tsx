@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 import ContactForm from "@/components/ContactForm";
 import SectionHeading from "@/components/SectionHeading";
+import SocialIcons from "@/components/SocialIcons";
 import { profile } from "@/lib/portfolio";
 import { fadeUp, slideInLeft, slideInRight, viewport } from "@/lib/animations";
 
@@ -50,23 +51,8 @@ export default function Contact() {
               </div>
               <div>
                 <dt className="text-muted">Social</dt>
-                <dd className="mt-1 flex gap-4 font-medium">
-                  <a
-                    href={profile.social.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="transition-colors hover:text-accent"
-                  >
-                    GitHub
-                  </a>
-                  <a
-                    href={profile.social.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="transition-colors hover:text-accent"
-                  >
-                    LinkedIn
-                  </a>
+                <dd className="mt-2">
+                  <SocialIcons iconClassName="h-5 w-5" />
                 </dd>
               </div>
             </dl>

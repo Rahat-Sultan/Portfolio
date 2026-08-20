@@ -80,9 +80,9 @@ export default function Hero() {
             animate="visible"
             transition={{ delay: 0.2 }}
           >
-            <div className="relative h-32 w-32 sm:h-44 sm:w-44">
+            <div className="relative h-40 w-40 sm:h-56 sm:w-56">
               <div
-                className="absolute inset-0 rounded-full blur-xl opacity-40"
+                className="absolute -inset-3 rounded-full blur-2xl opacity-60"
                 style={{ backgroundColor: "var(--glow)" }}
               />
               <Image

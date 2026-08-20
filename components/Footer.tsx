@@ -1,4 +1,5 @@
 import { profile } from "@/lib/portfolio";
+import SocialIcons from "@/components/SocialIcons";
 
 export default function Footer() {
   return (
@@ -7,30 +8,7 @@ export default function Footer() {
         <p>
           &copy; {new Date().getFullYear()} {profile.name}. All rights reserved.
         </p>
-        <div className="flex gap-4">
-          <a
-            href={profile.social.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-foreground"
-          >
-            GitHub
-          </a>
-          <a
-            href={profile.social.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-foreground"
-          >
-            LinkedIn
-          </a>
-          <a
-            href={`mailto:${profile.email}`}
-            className="transition-colors hover:text-foreground"
-          >
-            Email
-          </a>
-        </div>
+        <SocialIcons />
       </div>
     </footer>
   );

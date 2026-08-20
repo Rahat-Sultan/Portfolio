@@ -9,7 +9,7 @@ import { fadeUp, slideInRight, staggerContainer, viewport } from "@/lib/animatio
 
 export default function About() {
   return (
-    <section className="px-6 py-20">
+    <section className="px-6 py-10 pt-4">
       <div className="mx-auto max-w-5xl">
         <SectionHeading
           id="about"
