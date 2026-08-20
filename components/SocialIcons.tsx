@@ -43,9 +43,9 @@ export default function SocialIcons({
       ),
     },
     {
-      href: `mailto:${profile.email}`,
+      href: `https://mail.google.com/mail/?view=cm&to=${profile.email}`,
       label: "Email",
-      external: false,
+      external: true,
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"

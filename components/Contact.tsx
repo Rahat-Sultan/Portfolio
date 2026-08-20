@@ -38,7 +38,9 @@ export default function Contact() {
                 <dt className="text-muted">Email</dt>
                 <dd className="mt-1 font-medium">
                   <a
-                    href={`mailto:${profile.email}`}
+                    href={`https://mail.google.com/mail/?view=cm&to=${profile.email}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="transition-colors hover:text-accent"
                   >
                     {profile.email}

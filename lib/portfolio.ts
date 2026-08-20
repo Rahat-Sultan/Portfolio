@@ -4,7 +4,7 @@ export const profile = {
   tagline:
     "Final-year CS student specializing in AI/ML — building full-stack web apps with Next.js and React, training CNN models, and shipping projects end to end.",
   location: "Rawalpindi, Pakistan",
-  email: "rahatsultan313@gmail.com",
+  email: "rahatsultan654@gmail.com",
   resumeUrl: "/resume.pdf",
   social: {
     github: "https://github.com/Rahat-Sultan",
