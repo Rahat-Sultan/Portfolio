@@ -1,3 +1,4 @@
+import Image from "next/image";
 import SectionHeading from "@/components/SectionHeading";
 import { about, profile } from "@/lib/portfolio";
 
@@ -19,33 +20,46 @@ export default function About() {
             ))}
           </div>
 
-          <aside className="rounded-2xl border border-border bg-surface p-6">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
-              Quick facts
-            </h3>
-            <dl className="space-y-4 text-sm">
-              <div>
-                <dt className="text-muted">Location</dt>
-                <dd className="mt-1 font-medium">{profile.location}</dd>
-              </div>
-              <div>
-                <dt className="text-muted">Email</dt>
-                <dd className="mt-1 font-medium">
-                  <a
-                    href={`mailto:${profile.email}`}
-                    className="transition-colors hover:text-accent"
-                  >
-                    {profile.email}
-                  </a>
-                </dd>
-              </div>
-              <div>
-                <dt className="text-muted">Focus</dt>
-                <dd className="mt-1 font-medium">
-                  Full-stack web development
-                </dd>
-              </div>
-            </dl>
+          <aside className="space-y-4">
+            {/* Profile photo */}
+            <div className="relative mx-auto h-48 w-48 lg:mx-0">
+              <Image
+                src="/profile.jpg"
+                alt={`${profile.name} profile photo`}
+                fill
+                className="rounded-2xl object-cover border border-border"
+              />
+            </div>
+
+            {/* Quick facts */}
+            <div className="rounded-2xl border border-border bg-surface p-6">
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
+                Quick facts
+              </h3>
+              <dl className="space-y-4 text-sm">
+                <div>
+                  <dt className="text-muted">Location</dt>
+                  <dd className="mt-1 font-medium">{profile.location}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted">Email</dt>
+                  <dd className="mt-1 font-medium">
+                    <a
+                      href={`mailto:${profile.email}`}
+                      className="transition-colors hover:text-accent"
+                    >
+                      {profile.email}
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-muted">Focus</dt>
+                  <dd className="mt-1 font-medium">
+                    Full-stack web development
+                  </dd>
+                </div>
+              </dl>
+            </div>
           </aside>
         </div>
       </div>
