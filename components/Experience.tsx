@@ -1,5 +1,10 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 import SectionHeading from "@/components/SectionHeading";
 import { experience } from "@/lib/portfolio";
+import { slideInLeft, staggerContainer, viewport } from "@/lib/animations";
 
 export default function Experience() {
   return (
@@ -12,10 +17,17 @@ export default function Experience() {
           description="Projects and experience that reflect how I work and what I've learned."
         />
 
-        <div className="space-y-6">
+        <motion.div
+          className="space-y-6"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
+        >
           {experience.map((item) => (
-            <article
+            <motion.article
               key={item.title}
+              variants={slideInLeft}
               className="rounded-2xl border border-border bg-surface p-6 sm:p-8"
             >
               <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -36,9 +48,9 @@ export default function Experience() {
                   </li>
                 ))}
               </ul>
-            </article>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

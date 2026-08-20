@@ -1,5 +1,10 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 import SectionHeading from "@/components/SectionHeading";
 import { skillGroups } from "@/lib/portfolio";
+import { fadeUp, staggerContainer, viewport } from "@/lib/animations";
 
 export default function Skills() {
   return (
@@ -12,10 +17,17 @@ export default function Skills() {
           description="Tools and frameworks I use to design, build, and ship web applications."
         />
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <motion.div
+          className="grid gap-6 md:grid-cols-3"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
+        >
           {skillGroups.map((group) => (
-            <article
+            <motion.article
               key={group.category}
+              variants={fadeUp}
               className="rounded-2xl border border-border bg-surface p-6"
             >
               <h3 className="mb-4 text-lg font-semibold">{group.category}</h3>
@@ -29,9 +41,9 @@ export default function Skills() {
                   </li>
                 ))}
               </ul>
-            </article>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

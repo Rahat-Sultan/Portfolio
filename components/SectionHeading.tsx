@@ -1,3 +1,8 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { fadeUp, viewport } from "@/lib/animations";
+
 type SectionHeadingProps = {
   id: string;
   label: string;
@@ -12,7 +17,14 @@ export default function SectionHeading({
   description,
 }: SectionHeadingProps) {
   return (
-    <div id={id} className="mb-10 scroll-mt-24">
+    <motion.div
+      id={id}
+      className="mb-10 scroll-mt-24"
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewport}
+    >
       <p className="mb-2 text-sm font-medium uppercase tracking-widest text-accent">
         {label}
       </p>
@@ -20,6 +32,6 @@ export default function SectionHeading({
       {description ? (
         <p className="mt-3 max-w-2xl text-muted">{description}</p>
       ) : null}
-    </div>
+    </motion.div>
   );
 }

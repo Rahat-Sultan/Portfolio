@@ -1,6 +1,11 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 import ContactForm from "@/components/ContactForm";
 import SectionHeading from "@/components/SectionHeading";
 import { profile } from "@/lib/portfolio";
+import { fadeUp, slideInLeft, slideInRight, viewport } from "@/lib/animations";
 
 export default function Contact() {
   return (
@@ -14,7 +19,13 @@ export default function Contact() {
         />
 
         <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-          <aside className="rounded-2xl border border-border bg-surface p-6">
+          <motion.aside
+            className="rounded-2xl border border-border bg-surface p-6"
+            variants={slideInLeft}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewport}
+          >
             <h3 className="mb-4 text-lg font-semibold">Get in touch</h3>
             <p className="mb-6 text-sm leading-relaxed text-muted">
               Whether you&apos;re hiring, collaborating, or just want to say
@@ -59,11 +70,17 @@ export default function Contact() {
                 </dd>
               </div>
             </dl>
-          </aside>
+          </motion.aside>
 
-          <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8">
+          <motion.div
+            className="rounded-2xl border border-border bg-surface p-6 sm:p-8"
+            variants={slideInRight}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewport}
+          >
             <ContactForm />
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

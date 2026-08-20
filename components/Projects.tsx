@@ -1,4 +1,4 @@
-import ProjectCard from "@/components/ProjectCard";
+import ProjectsGrid from "@/components/ProjectsGrid";
 import SectionHeading from "@/components/SectionHeading";
 import { getProjects } from "@/lib/projects";
 
@@ -14,12 +14,7 @@ export default async function Projects() {
           title="Selected work"
           description="A showcase of projects I've designed, built, and shipped."
         />
-
-        <div className="grid gap-6 md:grid-cols-2">
-          {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+        <ProjectsGrid projects={projects} />
       </div>
     </section>
   );

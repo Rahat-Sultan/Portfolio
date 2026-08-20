@@ -1,6 +1,11 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "framer-motion";
+
 import SectionHeading from "@/components/SectionHeading";
 import { about, profile } from "@/lib/portfolio";
+import { fadeUp, slideInRight, staggerContainer, viewport } from "@/lib/animations";
 
 export default function About() {
   return (
@@ -14,14 +19,29 @@ export default function About() {
         />
 
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-4 text-muted leading-relaxed">
+          {/* Bio paragraphs — staggered */}
+          <motion.div
+            className="space-y-4 text-muted leading-relaxed"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewport}
+          >
             {about.paragraphs.map((paragraph) => (
-              <p key={paragraph.slice(0, 24)}>{paragraph}</p>
+              <motion.p key={paragraph.slice(0, 24)} variants={fadeUp}>
+                {paragraph}
+              </motion.p>
             ))}
-          </div>
+          </motion.div>
 
-          <aside className="space-y-4">
-            {/* Profile photo */}
+          {/* Photo + quick facts — slide in from right */}
+          <motion.aside
+            className="space-y-4"
+            variants={slideInRight}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewport}
+          >
             <div className="relative mx-auto h-48 w-48 lg:mx-0">
               <Image
                 src="/profile.jpg"
@@ -31,7 +51,6 @@ export default function About() {
               />
             </div>
 
-            {/* Quick facts */}
             <div className="rounded-2xl border border-border bg-surface p-6">
               <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-foreground">
                 Quick facts
@@ -54,13 +73,11 @@ export default function About() {
                 </div>
                 <div>
                   <dt className="text-muted">Focus</dt>
-                  <dd className="mt-1 font-medium">
-                    Full-stack web development
-                  </dd>
+                  <dd className="mt-1 font-medium">Full-stack web development</dd>
                 </div>
               </dl>
             </div>
-          </aside>
+          </motion.aside>
         </div>
       </div>
     </section>
