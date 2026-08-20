@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 
 import ThemeProvider from "@/components/ThemeProvider";
+import PageTransition from "@/components/PageTransition";
 
 import "./globals.css";
 
@@ -88,7 +89,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <PageTransition />
+          {children}
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>

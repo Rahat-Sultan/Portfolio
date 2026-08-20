@@ -32,4 +32,4 @@ export const staggerContainer: Variants = {
   visible: { transition: { staggerChildren: 0.1 } },
 };
 
-export const viewport = { once: true, amount: 0.2 } as const;
+export const viewport = { once: false, amount: 0.2 } as const;
