@@ -16,13 +16,13 @@ const SLIDE_INTERVAL_MS = 4000;
 export default function ProjectCard({ project }: ProjectCardProps) {
   const hasLinks = project.live_url || project.github_url;
 
-  // Memoize so the array reference is stable across renders —
-  // prevents the cycling useEffect from tearing down and restarting
-  // every time the parent re-renders with a new project object reference.
-  // Guard against undefined explicitly: the `images` column may not
-  // exist on the live DB yet (if the ALTER TABLE migration hasn't been
-  // run), in which case Supabase returns undefined even though the TS
-  // type says string[].
+  // Memoize so the array reference is stable across renders.
+  // Key on project.id + a stable string of the URLs rather than the
+  // array reference itself — the RSC→client boundary and Framer Motion
+  // re-renders can produce new array references with identical contents
+  // on every render, which would make useMemo recompute and give the
+  // useEffect a new dependency on every render, resetting the interval.
+  const imagesKey = project.images?.join(",") ?? "";
   const images = useMemo<string[] | null>(
     () => {
       const raw = project.images;
@@ -30,7 +30,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       return raw;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [project.id, project.images],
+    [project.id, imagesKey],
   );
 
   const isMultiImage = images !== null && images.length > 1;
