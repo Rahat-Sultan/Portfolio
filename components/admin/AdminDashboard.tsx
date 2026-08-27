@@ -30,7 +30,6 @@ const emptyForm = {
   title: "",
   description: "",
   tech_stack: "",
-  image_url: "",
   live_url: "",
   github_url: "",
   featured: false,
@@ -51,6 +50,10 @@ export default function AdminDashboard({
   const [formStatus, setFormStatus] = useState<"idle" | "saving" | "error">("idle");
   const [formError, setFormError] = useState("");
 
+  // Image upload state
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+
   // Deletion state
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -61,6 +64,7 @@ export default function AdminDashboard({
   function openNewForm() {
     setEditingId(null);
     setForm(emptyForm);
+    setImagePreviews([]);
     setFormError("");
     setFormStatus("idle");
     setShowForm(true);
@@ -72,11 +76,18 @@ export default function AdminDashboard({
       title: project.title,
       description: project.description,
       tech_stack: project.tech_stack.join(", "),
-      image_url: project.image_url ?? "",
       live_url: project.live_url ?? "",
       github_url: project.github_url ?? "",
       featured: project.featured,
     });
+    // Pre-populate previews: prefer images array, fall back to image_url
+    const existing =
+      project.images?.length
+        ? project.images
+        : project.image_url
+        ? [project.image_url]
+        : [];
+    setImagePreviews(existing);
     setFormError("");
     setFormStatus("idle");
     setShowForm(true);
@@ -86,6 +97,45 @@ export default function AdminDashboard({
     setShowForm(false);
     setEditingId(null);
     setForm(emptyForm);
+    setImagePreviews([]);
+  }
+
+  // ── Image upload handlers ──────────────────────────────────────────────
+  async function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+
+    setUploading(true);
+    const uploadedUrls: string[] = [];
+
+    for (const file of files) {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+
+      const { error } = await supabase.storage
+        .from("project-images")
+        .upload(fileName, file);
+
+      if (error) {
+        console.error("Upload failed:", error.message);
+        continue;
+      }
+
+      const { data } = supabase.storage
+        .from("project-images")
+        .getPublicUrl(fileName);
+
+      uploadedUrls.push(data.publicUrl);
+    }
+
+    setImagePreviews((prev) => [...prev, ...uploadedUrls]);
+    setUploading(false);
+    // Reset the input so the same file can be re-selected if needed
+    e.target.value = "";
+  }
+
+  function removeImage(index: number) {
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   }
 
   // ── Project CRUD ───────────────────────────────────────────────────────
@@ -105,7 +155,9 @@ export default function AdminDashboard({
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean),
-      image_url: form.image_url.trim() || null,
+      // First image becomes the primary thumbnail for backward compatibility
+      image_url: imagePreviews[0] ?? null,
+      images: imagePreviews,
       live_url: form.live_url.trim() || null,
       github_url: form.github_url.trim() || null,
       featured: form.featured,
@@ -265,18 +317,51 @@ export default function AdminDashboard({
                 />
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div>
-                  <label className={labelCls}>Image URL</label>
-                  <input
-                    className={inputCls}
-                    value={form.image_url}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, image_url: e.target.value }))
-                    }
-                    placeholder="https://…"
-                  />
-                </div>
+              {/* ── Image upload ── */}
+              <div>
+                <label className={labelCls}>Project images</label>
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg, image/webp"
+                  multiple
+                  onChange={handleImageSelect}
+                  disabled={uploading}
+                  className="block w-full text-sm text-muted file:mr-4 file:rounded-full file:border file:border-border file:bg-background file:px-4 file:py-2 file:text-sm file:font-medium file:transition-colors hover:file:border-border-strong hover:file:bg-hover disabled:opacity-60"
+                />
+                {uploading && (
+                  <p className="mt-1.5 text-sm text-muted">Uploading…</p>
+                )}
+
+                {imagePreviews.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {imagePreviews.map((url, i) => (
+                      <div key={url} className="relative h-20 w-20 shrink-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={url}
+                          alt={`Preview ${i + 1}`}
+                          className="h-full w-full rounded-xl object-cover border border-border"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(i)}
+                          aria-label="Remove image"
+                          className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white shadow"
+                        >
+                          ×
+                        </button>
+                        {i === 0 && (
+                          <span className="absolute bottom-1 left-1 rounded bg-black/60 px-1 text-[10px] text-white">
+                            Cover
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className={labelCls}>Live URL</label>
                   <input
@@ -323,7 +408,7 @@ export default function AdminDashboard({
                 <button
                   type="button"
                   onClick={handleSaveProject}
-                  disabled={formStatus === "saving"}
+                  disabled={formStatus === "saving" || uploading}
                   className={btnPrimary}
                 >
                   {formStatus === "saving" ? "Saving…" : editingId ? "Update" : "Add project"}
@@ -355,6 +440,11 @@ export default function AdminDashboard({
                       {project.featured && (
                         <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent">
                           Featured
+                        </span>
+                      )}
+                      {project.images?.length > 0 && (
+                        <span className="rounded-full border border-border bg-background px-2 py-0.5 text-xs text-muted">
+                          {project.images.length} image{project.images.length !== 1 ? "s" : ""}
                         </span>
                       )}
                     </div>

@@ -20,7 +20,15 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface"
     >
       <div className="relative aspect-video w-full overflow-hidden border-b border-border bg-background">
-        {project.image_url ? (
+        {project.images?.length ? (
+          <Image
+            src={project.images[0]}
+            alt={project.title}
+            fill
+            className="object-cover transition-transform duration-500 hover:scale-105"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        ) : project.image_url ? (
           <Image
             src={project.image_url}
             alt={project.title}
