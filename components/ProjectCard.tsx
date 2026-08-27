@@ -27,6 +27,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
   const isMultiImage = images !== null && images.length > 1;
 
+  const [isHovered, setIsHovered] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const prefersReducedMotion = useRef(
     typeof window !== "undefined"
@@ -34,38 +35,23 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       : false,
   );
 
-  // Auto-cycling interval — only when multiple images exist
+  // Hover-gated cycling interval — starts on hover, resets to image 0 on leave.
+  // Reduced-motion: interval is skipped even on hover; image 1 stays static.
   useEffect(() => {
     if (!isMultiImage) return;
+    if (!isHovered) {
+      setCurrentIndex(0); // always reset to first image when not hovered
+      return;
+    }
     if (prefersReducedMotion.current) return;
 
-    // Non-null assertion safe: isMultiImage guarantees images is non-null with length > 1
     const imgs = images as string[];
-    let interval: ReturnType<typeof setInterval> | null = null;
+    const interval = setInterval(() => {
+      setCurrentIndex((i) => (i + 1) % imgs.length);
+    }, SLIDE_INTERVAL_MS);
 
-    function startInterval() {
-      interval = setInterval(() => {
-        setCurrentIndex((i) => (i + 1) % imgs.length);
-      }, SLIDE_INTERVAL_MS);
-    }
-
-    function handleVisibilityChange() {
-      if (document.visibilityState === "hidden") {
-        if (interval) clearInterval(interval);
-        interval = null;
-      } else if (!interval) {
-        startInterval();
-      }
-    }
-
-    startInterval();
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      if (interval) clearInterval(interval);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [isMultiImage, images]);
+    return () => clearInterval(interval);
+  }, [isHovered, isMultiImage, images]);
 
   // Resolve the single-image src (used when not multi-image)
   const singleSrc = images ? images[0] : project.image_url;
@@ -77,7 +63,11 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface"
     >
       {/* Image area */}
-      <div className="relative aspect-video w-full overflow-hidden border-b border-border bg-background">
+      <div
+        className="relative aspect-video w-full overflow-hidden border-b border-border bg-background"
+        onMouseEnter={isMultiImage ? () => setIsHovered(true) : undefined}
+        onMouseLeave={isMultiImage ? () => setIsHovered(false) : undefined}
+      >
         {isMultiImage && images ? (
           // ── Multi-image: animated crossfade slideshow ──────────────────
           <>
