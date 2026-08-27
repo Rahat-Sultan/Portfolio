@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -15,43 +15,59 @@ const SLIDE_INTERVAL_MS = 4000;
 
 export default function ProjectCard({ project }: ProjectCardProps) {
   const hasLinks = project.live_url || project.github_url;
-  const images = project.images?.length ? project.images : null;
-  const isMultiImage = images && images.length > 1;
+
+  // Memoize so the array reference is stable across renders —
+  // prevents the cycling useEffect from tearing down and restarting
+  // every time the parent re-renders with a new project object reference.
+  const images = useMemo<string[] | null>(
+    () => (project.images?.length ? project.images : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [project.id, project.images],
+  );
+
+  const isMultiImage = images !== null && images.length > 1;
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const prefersReducedMotion = useRef(false);
-
-  // Detect reduced-motion once on mount (client only)
-  useEffect(() => {
-    prefersReducedMotion.current = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-  }, []);
+  const prefersReducedMotion = useRef(
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false,
+  );
 
   // Auto-cycling interval — only when multiple images exist
   useEffect(() => {
     if (!isMultiImage) return;
     if (prefersReducedMotion.current) return;
 
-    const interval = setInterval(() => {
-      setCurrentIndex((i) => (i + 1) % images.length);
-    }, SLIDE_INTERVAL_MS);
+    // Non-null assertion safe: isMultiImage guarantees images is non-null with length > 1
+    const imgs = images as string[];
+    let interval: ReturnType<typeof setInterval> | null = null;
 
-    // Pause when tab is hidden
+    function startInterval() {
+      interval = setInterval(() => {
+        setCurrentIndex((i) => (i + 1) % imgs.length);
+      }, SLIDE_INTERVAL_MS);
+    }
+
     function handleVisibilityChange() {
       if (document.visibilityState === "hidden") {
-        clearInterval(interval);
+        if (interval) clearInterval(interval);
+        interval = null;
+      } else if (!interval) {
+        startInterval();
       }
     }
+
+    startInterval();
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [isMultiImage, images]);
 
-  // Determine the cover image src for the non-multi-image path
+  // Resolve the single-image src (used when not multi-image)
   const singleSrc = images ? images[0] : project.image_url;
 
   return (
@@ -62,8 +78,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
     >
       {/* Image area */}
       <div className="relative aspect-video w-full overflow-hidden border-b border-border bg-background">
-
-        {isMultiImage ? (
+        {isMultiImage && images ? (
           // ── Multi-image: animated crossfade slideshow ──────────────────
           <>
             <AnimatePresence mode="wait">
@@ -92,9 +107,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 <span
                   key={i}
                   className={`block h-1.5 rounded-full transition-all duration-300 ${
-                    i === currentIndex
-                      ? "w-4 bg-white"
-                      : "w-1.5 bg-white/50"
+                    i === currentIndex ? "w-4 bg-white" : "w-1.5 bg-white/50"
                   }`}
                 />
               ))}
