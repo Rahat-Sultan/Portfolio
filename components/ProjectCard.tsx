@@ -101,6 +101,19 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               </motion.div>
             </AnimatePresence>
 
+            {/* Preload the next image so the upcoming crossfade
+                doesn't flash/wait on a fresh network fetch */}
+            <Image
+              src={images[(currentIndex + 1) % images.length]}
+              alt=""
+              width={1}
+              height={1}
+              className="hidden"
+              aria-hidden="true"
+              priority={false}
+              loading="eager"
+            />
+
             {/* Dot indicators */}
             <div className="absolute bottom-2 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
               {images.map((_, i) => (
