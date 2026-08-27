@@ -19,8 +19,16 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   // Memoize so the array reference is stable across renders —
   // prevents the cycling useEffect from tearing down and restarting
   // every time the parent re-renders with a new project object reference.
+  // Guard against undefined explicitly: the `images` column may not
+  // exist on the live DB yet (if the ALTER TABLE migration hasn't been
+  // run), in which case Supabase returns undefined even though the TS
+  // type says string[].
   const images = useMemo<string[] | null>(
-    () => (project.images?.length ? project.images : null),
+    () => {
+      const raw = project.images;
+      if (!raw || !Array.isArray(raw) || raw.length === 0) return null;
+      return raw;
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [project.id, project.images],
   );
