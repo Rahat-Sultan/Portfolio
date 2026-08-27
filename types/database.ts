@@ -16,6 +16,7 @@ export interface Database {
           description: string;
           tech_stack: string[];
           image_url: string | null;
+          images: string[];
           live_url: string | null;
           github_url: string | null;
           featured: boolean;
@@ -27,6 +28,7 @@ export interface Database {
           description: string;
           tech_stack?: string[];
           image_url?: string | null;
+          images?: string[];
           live_url?: string | null;
           github_url?: string | null;
           featured?: boolean;
@@ -38,6 +40,7 @@ export interface Database {
           description?: string;
           tech_stack?: string[];
           image_url?: string | null;
+          images?: string[];
           live_url?: string | null;
           github_url?: string | null;
           featured?: boolean;
