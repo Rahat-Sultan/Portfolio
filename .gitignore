@@ -34,6 +34,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# project notes — local only, not for version control
+Kiro_and_chamber_of_secrets/
+
 # vercel
 .vercel
 
